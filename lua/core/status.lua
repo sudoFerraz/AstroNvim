@@ -34,11 +34,13 @@ M.modes = {
 }
 
 function M.hl.group(hlgroup, base)
-  return vim.tbl_deep_extend(
-    "force",
-    base or {},
-    { fg = hl_prop(hlgroup, "foreground"), bg = hl_prop(hlgroup, "background") }
-  )
+  return function()
+    return vim.tbl_deep_extend(
+      "force",
+      base or {},
+      { fg = hl_prop(hlgroup, "foreground"), bg = hl_prop(hlgroup, "background") }
+    )
+  end
 end
 
 function M.hl.fg(hlgroup, base)
@@ -47,16 +49,20 @@ end
 
 function M.hl.mode(base)
   local lualine_avail, lualine = pcall(require, "lualine.themes." .. (vim.g.colors_name or "default_theme"))
-  return function()
-    return M.hl.group(
-      "Feline" .. M.modes[vim.fn.mode()][2],
-      vim.tbl_deep_extend(
-        "force",
-        lualine_avail and lualine[M.modes[vim.fn.mode()][2]:lower()].a
-          or { fg = C.bg_1, bg = M.modes[vim.fn.mode()][3] },
-        base or {}
-      )
+  return M.hl.group(
+    "Feline" .. M.modes[vim.fn.mode()][2],
+    vim.tbl_deep_extend(
+      "force",
+      lualine_avail and lualine[M.modes[vim.fn.mode()][2]:lower()].a or { fg = C.bg_1, bg = M.modes[vim.fn.mode()][3] },
+      base or {}
     )
+  )
+end
+
+function M.provider.breadcrumbs(depth, separator, icons)
+  return function()
+    local aerial_avail, aerial = pcall(require, "aerial")
+    return aerial_avail and astronvim.format_symbols(aerial.get_location(true), depth, separator or " > ", icons) or ""
   end
 end
 
@@ -97,6 +103,10 @@ end
 
 function M.provider.spacer(n)
   return string.rep(" ", n or 1)
+end
+
+function M.conditional.aerial_available()
+  return astronvim.is_available "aerial.nvim"
 end
 
 function M.conditional.git_available()
