@@ -167,6 +167,8 @@ local astro_plugins = {
     end,
   },
 
+  -- ['github/copilot'] = {},
+
   -- Built-in LSP
   ["neovim/nvim-lspconfig"] = { event = "VimEnter" },
 

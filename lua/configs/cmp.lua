@@ -56,6 +56,7 @@ function M.config()
         nvim_lsp = 1,
         luasnip = 1,
         cmp_tabnine = 1,
+        copilot = 1,
         buffer = 1,
         path = 1,
       },
